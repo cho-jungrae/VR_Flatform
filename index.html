@@ -18,13 +18,12 @@
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li class="active"><a href="#"><span class="icon">📊</span> 대시보드</a></li>
-                    <li><a href="#"><span class="icon">📡</span> 운영 관제</a></li>
-                    <li><a href="#"><span class="icon">👥</span> 입장/배정 관리</a></li>
-                    <li><a href="#"><span class="icon">🖥️</span> 장비 관리</a></li>
-                    <li><a href="#"><span class="icon">⚠️</span> 운영 이슈/안전 관리</a></li>
-                    <li><a href="#"><span class="icon">🎥</span> 콘텐츠/공간 설정</a></li>
-                    <li><a href="#"><span class="icon">📈</span> 통계/리포트</a></li>
+                    <li class="active" id="nav-dashboard"><a href="#"><span class="icon">📊</span> 대시보드</a></li>
+                    <li id="nav-opcontrol"><a href="#"><span class="icon">📡</span> 운영 관제</a></li>
+                    <li id="nav-assignment"><a href="#"><span class="icon">👥</span> 입장/배정 관리</a></li>
+                    <li id="nav-equipment"><a href="#"><span class="icon">🖥️</span> 장비 관리</a></li>
+                    <li id="nav-issue"><a href="#"><span class="icon">⚠️</span> 운영 이슈/안전 관리</a></li>
+                    <li id="nav-message"><a href="#"><span class="icon">📢</span> 운영 메시지 관리</a></li>
                     <li><a href="#"><span class="icon">⚙️</span> 시스템 설정</a></li>
                 </ul>
             </nav>
@@ -52,10 +51,11 @@
                 </div>
             </header>
 
-            <!-- Dashboard Content -->
-            <div class="dashboard-grid">
-                <!-- Top Summary Cards -->
-                <div class="summary-cards">
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="view-section active">
+                <div class="dashboard-grid">
+                    <!-- Top Summary Cards -->
+                    <div class="summary-cards">
                     <div class="summary-card">
                         <div class="card-icon blue">📈</div>
                         <div class="card-value" id="valTotalHmd">0</div>
@@ -98,6 +98,605 @@
                         </div>
                         <div class="zone-grid" id="zoneGridContainer"></div>
                     </section>
+                </div>
+            </div>
+            </div>
+
+            <!-- Operations Control View -->
+            <div id="view-opcontrol" class="view-section" style="display: none;">
+                <div class="op-header">
+                    <h2>운영 관제 <span style="font-size:0.9rem; color:var(--text-muted); font-weight:500; margin-left:12px;">실시간 통합 제어 및 관리</span></h2>
+                    <div class="op-tabs">
+                        <button class="op-tab-btn active" data-tab="op-tab-1">1️⃣ 실시간 운영 현황</button>
+                        <button class="op-tab-btn" data-tab="op-tab-2">2️⃣ Session 관리</button>
+                        <button class="op-tab-btn" data-tab="op-tab-3">3️⃣ Wave 관리</button>
+                        <button class="op-tab-btn" data-tab="op-tab-4">4️⃣ Zone 관제</button>
+                    </div>
+                </div>
+
+                <div class="op-content-area">
+                    <!-- 1. 실시간 운영 현황 -->
+                    <div id="op-tab-1" class="op-tab-content active">
+                        <div class="op-toolbar">
+                            <div class="toolbar-left">
+                                <h3>실시간 통합 관제</h3>
+                                <p class="toolbar-desc">현재 체험의 전체적인 흐름과 문제가 발생한 Wave/Zone을 모니터링합니다.</p>
+                            </div>
+                            <div class="toolbar-actions">
+                                <button class="btn-danger"><span class="icon">◉</span> 전체 체험 정지</button>
+                            </div>
+                        </div>
+                        <div class="op-tab-body">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Session Name</th>
+                                            <th>Wave 상태</th>
+                                            <th>현재 Zone</th>
+                                            <th>혼잡도 현황</th>
+                                            <th>주요 경고 (이탈/장비)</th>
+                                            <th class="text-right">제어</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rtOpTableBody">
+                                        <!-- JS Rendering -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Session 관리 -->
+                    <div id="op-tab-2" class="op-tab-content">
+                        <div class="op-toolbar">
+                            <div class="toolbar-left">
+                                <h3>Session 운영 관리</h3>
+                                <p class="toolbar-desc">체험 회차(Session)의 일정을 통제하고 시작/종료를 제어합니다.</p>
+                            </div>
+                            <div class="toolbar-actions">
+                                <button class="btn-primary"><span class="icon">➕</span> 새 Session 생성</button>
+                            </div>
+                        </div>
+                        <div class="op-tab-body">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Session ID</th>
+                                            <th>Session 명</th>
+                                            <th>현재 상태</th>
+                                            <th>참여 인원 (Wave 수)</th>
+                                            <th class="text-right">액션 (시작/종료/지연)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sessionTableBody">
+                                        <!-- JS Rendering -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Wave 관리 -->
+                    <div id="op-tab-3" class="op-tab-content">
+                        <div class="op-toolbar">
+                            <div class="toolbar-left">
+                                <h3>Wave 상세 제어</h3>
+                                <p class="toolbar-desc">사용자 편성을 수정하거나, 특정 Wave를 다른 Zone으로 강제 이동/종료 처리합니다.</p>
+                            </div>
+                            <div class="toolbar-actions">
+                                <button class="btn-primary"><span class="icon">➕</span> Wave 생성</button>
+                            </div>
+                        </div>
+                        <div class="op-tab-body">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Wave ID</th>
+                                            <th>소속 Session</th>
+                                            <th>상태</th>
+                                            <th>현재 Zone</th>
+                                            <th>편성 멤버</th>
+                                            <th class="text-right">강제 제어</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="waveTableBody">
+                                        <!-- JS Rendering -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Zone 관제 -->
+                    <div id="op-tab-4" class="op-tab-content">
+                        <div class="op-toolbar">
+                            <div class="toolbar-left">
+                                <h3>공간(Zone) 안전 관리</h3>
+                                <p class="toolbar-desc">물리적 공간의 혼잡도를 관리하고 안전을 위해 일시 정지 및 진입을 통제합니다.</p>
+                            </div>
+                        </div>
+                        <div class="op-tab-body">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Zone 이름</th>
+                                            <th>공간 상태</th>
+                                            <th>수용 현황 (현재/최대)</th>
+                                            <th>혼잡도 모니터링</th>
+                                            <th class="text-right">설정 (활성/제한/우회)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="zoneTableBody">
+                                        <!-- JS Rendering -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Entry & Assignment View -->
+            <div id="view-assignment" class="view-section" style="display: none;">
+                <div class="op-header">
+                    <h2>입장 / 배정 관리 <span style="font-size:0.9rem; color:var(--text-muted); font-weight:500; margin-left:12px;">현장 등록 및 Wave 배정 관제</span></h2>
+                    <div class="op-tabs">
+                        <button class="assign-tab-btn active" data-tab="assign-tab-1">1️⃣ 입장 등록 진행 현황</button>
+                        <button class="assign-tab-btn" data-tab="assign-tab-2">2️⃣ Wave / QR 매핑 관제 (핵심)</button>
+                    </div>
+                </div>
+
+                <div class="op-content-area" style="padding-bottom: 90px; position:relative;">
+                    
+                    <!-- 1. 입장 등록 진행 현황 -->
+                    <div id="assign-tab-1" class="assign-tab-content active">
+                        <div class="summary-cards" style="margin-bottom: 24px; grid-template-columns: repeat(3, 1fr);">
+                            <div class="summary-card">
+                                <div class="card-label">현재 등록 인원</div>
+                                <div class="card-value" id="valTotalReg">0</div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="card-label">Wave 편성 대기 인원</div>
+                                <div class="card-value text-blue" id="valWaitWave">0</div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="card-label">대상 Session 잔여 정원</div>
+                                <div class="card-value text-green" id="valSessionCap">0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="op-toolbar">
+                            <div class="toolbar-left">
+                                <h3>현장 등록 사용자 목록</h3>
+                                <p class="toolbar-desc">최근 등록된 순서 및 미배정자 우선으로 정렬됩니다.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>사용자 이름</th>
+                                        <th>등록 시각</th>
+                                        <th>QR 발급 상태</th>
+                                        <th>Wave 배정 여부</th>
+                                        <th class="text-right">예외 조치</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="registrationTableBody">
+                                    <!-- JS Rendering -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 2. Wave / QR 매핑 관제 -->
+                    <div id="assign-tab-2" class="assign-tab-content">
+                        <div class="op-toolbar">
+                            <div class="toolbar-left">
+                                <h3>Wave 구성 및 매핑 상태</h3>
+                                <p class="toolbar-desc">Wave 그룹별 인원, QR 매핑 진행률, 장비 상태를 상세히 관제합니다.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="wave-mapping-grid" id="waveMappingContainer">
+                            <!-- JS Rendering -> Grid of detailed Wave Cards -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Equipment Management View -->
+            <div id="view-equipment" class="view-section" style="display: none;">
+                <div class="op-header">
+                    <h2>장비 관리 <span style="font-size:0.9rem; color:var(--text-muted); font-weight:500; margin-left:12px;">HMD/장비 현황 모니터링 및 교체 통제</span></h2>
+                    <div class="op-tabs">
+                        <button class="equip-tab-btn active" data-tab="equip-tab-1">1️⃣ HMD 현황 관제</button>
+                        <button class="equip-tab-btn" data-tab="equip-tab-2">2️⃣ 장비 교체/회수 액션</button>
+                    </div>
+                </div>
+
+                <div class="op-content-area" style="position:relative; overflow-x:hidden;">
+                    
+                    <!-- 1. HMD 현황 모니터링 관제 보드 -->
+                    <div id="equip-tab-1" class="equip-tab-content active">
+                        <!-- 요약 KPI 카드 -->
+                        <div class="summary-cards" style="margin-bottom: 24px; grid-template-columns: repeat(5, 1fr);">
+                            <div class="summary-card">
+                                <div class="card-label">전체 장비</div>
+                                <div class="card-value" id="eqTotal">0</div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="card-label">사용 중</div>
+                                <div class="card-value text-blue" id="eqInUse">0</div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="card-label">사용 가능 (대기)</div>
+                                <div class="card-value text-green" id="eqAvailable">0</div>
+                            </div>
+                            <div class="summary-card alert">
+                                <div class="card-label">오류/고장</div>
+                                <div class="card-value text-red" id="eqError">0</div>
+                            </div>
+                            <div class="summary-card warning">
+                                <div class="card-label">배터리 Low (< 20%)</div>
+                                <div class="card-value text-orange" id="eqLowBat">0</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 필터링 툴바 -->
+                        <div class="op-toolbar">
+                            <div class="toolbar-left">
+                                <div class="eq-filters">
+                                    <button class="btn-filter active" data-filter="all">전체</button>
+                                    <button class="btn-filter" data-filter="available">사용 가능</button>
+                                    <button class="btn-filter" data-filter="inuse">사용 중</button>
+                                    <button class="btn-filter" data-filter="error">오류 (긴급)</button>
+                                    <button class="btn-filter" data-filter="lowbat">배터리 부족</button>
+                                </div>
+                            </div>
+                            <div class="toolbar-actions">
+                                <span class="toolbar-desc">※ 오류 및 배터리 부족 기기가 최상단에 배열됩니다.</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 장비 그리드 보드 -->
+                        <div class="eq-grid-board" id="eqGridBoard">
+                            <!-- JS 렌더링 -->
+                        </div>
+                    </div>
+
+                    <!-- 2. 장비 교체 / 회수 -->
+                    <div id="equip-tab-2" class="equip-tab-content">
+                        <div class="op-toolbar">
+                            <div class="toolbar-left">
+                                <h3>오류 장비 교체 및 대기 상태 회수</h3>
+                                <p class="toolbar-desc">현장에서 문제가 발생한 기기를 예비 기기로 스왑(Swap)하여 매핑 정보를 승계합니다.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="eq-swap-container">
+                            <!-- 오류 장비 (현재) -->
+                            <div class="eq-swap-panel" style="border-top:3px solid #fecaca;">
+                                <h4>현재 (오류/교체 대상) 장비</h4>
+                                <select class="eq-select" id="selErrorEq">
+                                    <option value="">장비 선택...</option>
+                                    <!-- JS -->
+                                </select>
+                                <div class="eq-detail-card" id="cardErrorEq">
+                                    <div class="empty-state">장비를 선택하세요</div>
+                                </div>
+                            </div>
+
+                            <!-- 스왑 아이콘 -->
+                            <div class="eq-swap-icon">
+                                <button class="btn-primary btn-round" id="btnExecuteSwap" disabled onclick="alert('교체 성공! 데이터가 승계되었습니다.')">
+                                    <span class="icon" style="font-size:1.5rem;">🔁</span><br>
+                                    교체 실행
+                                </button>
+                            </div>
+
+                            <!-- 예비 장비 (교체할 기기) -->
+                            <div class="eq-swap-panel" style="border-top:3px solid #86efac;">
+                                <h4>예비 (교체에 투입할) 장비</h4>
+                                <select class="eq-select" id="selSpareEq">
+                                    <option value="">장비 선택...</option>
+                                    <!-- JS -->
+                                </select>
+                                <div class="eq-detail-card" id="cardSpareEq">
+                                    <div class="empty-state">장비를 선택하세요</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="op-toolbar" style="margin-top: 40px;">
+                            <div class="toolbar-left">
+                                <h3>체험 완료 장비 회수 처리</h3>
+                                <p class="toolbar-desc">체험을 종료한 '종료 세션'의 장비를 물리적으로 회수하고 '사용 가능' 상태로 돌립니다.</p>
+                            </div>
+                            <div class="toolbar-actions">
+                                <button class="btn-success"><span class="icon">✅</span> 일괄 회수 및 소독 완료 처리</button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:50px;"><input type="checkbox" checked></th>
+                                        <th>장비 ID</th>
+                                        <th>현재 상태</th>
+                                        <th>마지막 사용자</th>
+                                        <th>Wave</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="eqRetrieveTableBody">
+                                    <tr>
+                                        <td><input type="checkbox" checked></td>
+                                        <td>HMD-001</td>
+                                        <td><span class="status-badge check-in">Check-out (종료 완료)</span></td>
+                                        <td><strong>김지우</strong></td>
+                                        <td>W-01</td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" checked></td>
+                                        <td>HMD-002</td>
+                                        <td><span class="status-badge check-in">Check-out (종료 완료)</span></td>
+                                        <td><strong>박세준</strong></td>
+                                        <td>W-01</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div> <!-- End of content area -->
+                
+                <!-- Slide-out Equipment Detail Panel -->
+                <div class="eq-detail-sidebar" id="eqDetailSidebar">
+                    <div class="eq-sidebar-header">
+                        <h2 id="sdEqId">HMD-000</h2>
+                        <button class="close-eq-btn" id="closeEqSidebarBtn">&times;</button>
+                    </div>
+                    <div class="eq-sidebar-body">
+                        <div class="status-badge active" id="sdEqStatusBadge" style="width:fit-content; margin-bottom: 20px;">상태 배지</div>
+                        
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">배터리 잔량</span>
+                                <span class="info-value big" id="sdEqBattery" style="display:flex; align-items:center; gap:8px;">
+                                    <span class="battery-icon">🔋</span> 100%
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">네트워크 통신망</span>
+                                <span class="info-value" id="sdEqNetwork">✅ 양호 (Ping 12ms)</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">매핑된 사용자</span>
+                                <span class="info-value" id="sdEqUser">미배정</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">소속 (Wave / Session)</span>
+                                <span class="info-value" id="sdEqWaveSession">- / -</span>
+                            </div>
+                            <div class="info-item" id="sdEqErrorBox">
+                                <span class="info-label text-red">에러 메세지</span>
+                                <span class="info-value text-red bold" id="sdEqErrorMsg">없음</span>
+                            </div>
+                        </div>
+                        
+                        <div class="sidebar-actions" style="margin-top:40px; display:flex; flex-direction:column; gap:12px;">
+                            <button class="btn-primary" id="btnGoToSwap" style="padding:16px; font-size:1.1rem; border-radius:12px;"><span class="icon">🔄</span> 이 장비 교체하기</button>
+                            <button class="btn-outline text-danger" style="border-color:#fecaca;"><span class="icon">📴</span> 상태 강제 초기화 (Kill Switch)</button>
+                            <button class="btn-outline"><span class="icon">🔗</span> 사용자 매핑 강제 해제</button>
+                        </div>
+                    </div>
+                </div> <!-- End Slide Panel -->
+                
+            </div>
+
+            <!-- Issue & Safety Management View -->
+            <div id="view-issue" class="view-section" style="display: none;">
+                <div class="op-header">
+                    <h2>운영 이슈 / 안전 관리 <span style="font-size:0.9rem; color:var(--text-muted); font-weight:500; margin-left:12px;">현장 안전 이슈 통제 및 발생 이벤트 이력</span></h2>
+                </div>
+
+                <div class="op-content-area" style="position:relative; overflow-x:hidden; display:flex; flex-direction:column; gap:24px; padding:24px;">
+                    
+                    <!-- 1. 안전 운영 상태 요약 (Top) -->
+                    <div class="issue-section">
+                        <div class="issue-section-header">
+                            <h3><span class="icon">🛡️</span> 종합 안전 운영 상태</h3>
+                            <div class="safety-badge warning" id="kpiBigBadge">⚠️ 주의 필요</div>
+                        </div>
+                        <div class="kpi-risk-board">
+                            <div class="kpi-risk-card error">
+                                <div class="kpi-val" id="krHmdErr">0</div>
+                                <div class="kpi-tag">장비 오류</div>
+                            </div>
+                            <div class="kpi-risk-card warning">
+                                <div class="kpi-val" id="krHmdLow">0</div>
+                                <div class="kpi-tag">배터리 Low</div>
+                            </div>
+                            <div class="kpi-risk-card warning">
+                                <div class="kpi-val" id="krWaveDelay">0</div>
+                                <div class="kpi-tag">Wave 지연</div>
+                            </div>
+                            <div class="kpi-risk-card error">
+                                <div class="kpi-val" id="krUserOut">0</div>
+                                <div class="kpi-tag">사용자 이탈</div>
+                            </div>
+                            <div class="kpi-risk-card warning">
+                                <div class="kpi-val" id="krZoneConv">0</div>
+                                <div class="kpi-tag">Zone 혼잡 위험</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. 위험 상세 리스트 (Middle) -->
+                    <div class="issue-section">
+                        <div class="issue-section-header">
+                            <h3><span class="icon">🔍</span> 위험 및 지연 요소 상세</h3>
+                        </div>
+                        <div class="issue-grid-2">
+                            <!-- 위험 장비 리스트 -->
+                            <div class="issue-box">
+                                <h4>위험 장비 리스트</h4>
+                                <div class="issue-list" id="lstRiskEq">
+                                    <!-- JS Render -->
+                                </div>
+                            </div>
+                            <!-- 지연 Wave 리스트 -->
+                            <div class="issue-box">
+                                <h4>지연 발생 Wave</h4>
+                                <div class="issue-list" id="lstDelayWv">
+                                    <!-- JS Render -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. 이벤트 이력 조회 (Bottom) -->
+                    <div class="issue-section" style="flex:1;">
+                        <div class="issue-section-header">
+                            <h3><span class="icon">📜</span> 시스템/운영 이벤트 이력</h3>
+                            <div class="toolbar-actions">
+                                <select class="eq-select" style="padding:6px; width:150px; font-size:0.85rem;" id="selEventFilter">
+                                    <option value="all">전체 심각도</option>
+                                    <option value="danger">긴급/오류(Danger)</option>
+                                    <option value="warning">주의/경고(Warning)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-container" style="margin-top:12px;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:10%;">발생 시각</th>
+                                        <th style="width:15%;">이벤트 유형</th>
+                                        <th style="width:10%;">심각도</th>
+                                        <th style="width:15%;">관련 대상</th>
+                                        <th style="width:40%;">상세 설명</th>
+                                        <th style="text-align:center;">조치 (확인)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="eventHistoryBody">
+                                    <!-- JS Render -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Operation Message Management View -->
+            <div id="view-message" class="view-section" style="display: none;">
+                <div class="op-header">
+                    <h2>운영 메시지 관리 <span style="font-size:0.9rem; color:var(--text-muted); font-weight:500; margin-left:12px;">현장 즉시 안내방송 및 템플릿 관리 (방송 컨트롤 패널)</span></h2>
+                </div>
+
+                <div class="op-content-area" style="position:relative; overflow-x:hidden; display:flex; flex-direction:column; gap:24px; padding:24px;">
+                    
+                    <!-- 1. 메시지 즉시 송출 (Top) -->
+                    <div class="msg-broadcast-panel">
+                        <div class="msg-bcast-header">
+                            <h3><span class="icon">📡</span> 현장 즉시 송출 제어반</h3>
+                            <span class="toolbar-desc" style="color:#cbd5e1;">※ 저장된 템플릿 메시지를 선택하여 HMD 화면으로 즉시 푸시(Push) 방송을 송출합니다.</span>
+                        </div>
+                        
+                        <div class="msg-bcast-body" style="grid-template-columns: 1fr;">
+                            <!-- 컨트롤 패널 (3단 가로 배치) -->
+                            <div class="msg-controls">
+                                <div style="display:flex; gap:24px; align-items:stretch;">
+                                    
+                                    <!-- 1. 선택 폼 영역 -->
+                                    <div style="display:flex; flex-direction:column; gap:16px; flex:1;">
+                                        <div class="msg-form-group">
+                                            <label>송출 메시지 선택</label>
+                                            <select class="eq-select msg-select-lg" id="selBcastTemplate">
+                                                <!-- JS Render -->
+                                            </select>
+                                        </div>
+                                        <div class="msg-form-group">
+                                            <label>송출 대상 지정 (Target)</label>
+                                            <select class="eq-select msg-select-lg" id="selBcastTarget">
+                                                <option value="ALL">전체 진행 중인 Wave 통합 송출</option>
+                                                <option value="W-03">Wave 03 (Zone 7) 단독 송출</option>
+                                                <option value="W-06">Wave 06 (Zone 4) - 지연 발생 그룹 단독 송출</option>
+                                                <option value="W-08">Wave 08 (Zone 2) - 경고 그룹 단독 송출</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- 2. 메시지 본문 확인 영역 (신규) -->
+                                    <div style="display:flex; flex-direction:column; gap:12px; flex:1.5; background:#0f172a; padding:16px 20px; border-radius:8px; border:1px solid #334155;">
+                                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                                            <label style="font-size: 0.85rem; font-weight: 700; color: #94a3b8;"><span class="icon">📝</span> 송출 예정 알림 텍스트</label>
+                                            <span id="prevMsgType" style="font-size:0.75rem; padding:2px 8px; border-radius:4px; border:1px solid #475569; color:#94a3b8; font-weight:800;">선택 대기</span>
+                                        </div>
+                                        <div id="prevMsgText" style="flex:1; color:#f8fafc; font-size:1.1rem; line-height:1.6; font-weight:600; word-break:keep-all;">
+                                            좌측 드롭다운 또는 하단 리스트에서 상황에 맞는 메시지를 선택해 주세요.
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 3. 송출 실행 버튼 -->
+                                    <button class="btn-broadcast" id="btnExecuteBroadcast" style="width:160px;">
+                                        <span class="icon" style="font-size:1.8rem; margin-bottom:8px;">📡</span>
+                                        LIVE 송출
+                                    </button>
+                                </div>
+                                
+                                <div id="bcastStatus" style="text-align:right; font-weight:900; font-size:1rem; margin-top:-4px; opacity:0; transition:0.3s; color:#4ade80;">
+                                    송출 완료
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="issue-grid-2">
+                        <!-- 2. 메시지 템플릿 리스트 (Middle) -->
+                        <div class="issue-section" style="margin:0; padding:24px;">
+                            <div class="issue-section-header">
+                                <h3><span class="icon">📋</span> 등록된 템플릿 리스트</h3>
+                            </div>
+                            <div class="msg-template-list" id="lstMsgTemplates" style="margin-top:16px;">
+                                <!-- JS Render -->
+                            </div>
+                        </div>
+
+                        <!-- 3. 메시지 템플릿 등록 / 수정 (Bottom) -->
+                        <div class="issue-section" style="margin:0; padding:24px;">
+                            <div class="issue-section-header">
+                                <h3><span class="icon">✏️</span> 긴급 템플릿 즉석 등록 (생성)</h3>
+                            </div>
+                            <div class="msg-editor-form" style="margin-top:20px; display:flex; flex-direction:column; gap:20px;">
+                                <div class="msg-form-group">
+                                    <label style="color:#475569; font-size:0.9rem;">분류 (메시지 성격)</label>
+                                    <div class="radio-group" style="display:flex; gap:16px;">
+                                        <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="radio" name="msgType" value="info" checked> 일반 안내 (파란색)</label>
+                                        <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="radio" name="msgType" value="warn"> 사전 경고 (주황색)</label>
+                                        <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="radio" name="msgType" value="danger"> 긴급 통제 (빨간색)</label>
+                                    </div>
+                                </div>
+                                <div class="msg-form-group">
+                                    <label style="color:#475569; font-size:0.9rem;">관리용 식별 제목</label>
+                                    <input type="text" id="txtMsgTitle" class="eq-select" placeholder="예: 구역 이동 지연 안내" style="padding:12px;">
+                                </div>
+                                <div class="msg-form-group">
+                                    <label style="color:#475569; font-size:0.9rem;">HMD에 송출될 내용 분문</label>
+                                    <textarea id="txtMsgBody" class="eq-select" rows="4" placeholder="사용자에게 팝업으로 보여질 문구를 정확히 작성해주세요." style="padding:16px; resize:none; font-family:inherit; line-height:1.5; border:1px solid #cbd5e1;"></textarea>
+                                </div>
+                                <button class="btn-primary" id="btnSaveTemplate" style="align-self:flex-end; padding:14px 28px; border-radius:8px; font-size:1.05rem;"><span class="icon">➕</span> 이 템플릿 즉시 추가 / 활성화</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </main>
