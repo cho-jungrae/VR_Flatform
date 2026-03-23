@@ -253,7 +253,8 @@ const bindInteractions = (zoneData) => {
         'nav-assignment': document.getElementById('view-assignment'),
         'nav-equipment': document.getElementById('view-equipment'),
         'nav-issue': document.getElementById('view-issue'),
-        'nav-message': document.getElementById('view-message')
+        'nav-message': document.getElementById('view-message'),
+        'nav-settings': document.getElementById('view-settings')
     };
 
     navItems.forEach(item => {
@@ -325,6 +326,27 @@ const bindInteractions = (zoneData) => {
             btn.classList.add('active');
             const targetTab = document.getElementById(btn.dataset.tab);
             if(targetTab) targetTab.classList.add('active');
+        });
+    });
+
+    // 시스템 설정 서브 탭 전환
+    const settingTabBtns = document.querySelectorAll('.setting-tab-btn');
+    const settingTabContents = document.querySelectorAll('.setting-tab-content');
+    
+    settingTabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            settingTabBtns.forEach(b => b.classList.remove('active'));
+            settingTabContents.forEach(c => {
+                c.classList.remove('active');
+                c.style.display = 'none';
+            });
+            
+            btn.classList.add('active');
+            const targetTab = document.getElementById(btn.dataset.tab);
+            if(targetTab) {
+                targetTab.classList.add('active');
+                targetTab.style.display = 'block';
+            }
         });
     });
 

@@ -24,7 +24,7 @@
                     <li id="nav-equipment"><a href="#"><span class="icon">🖥️</span> 장비 관리</a></li>
                     <li id="nav-issue"><a href="#"><span class="icon">⚠️</span> 운영 이슈/안전 관리</a></li>
                     <li id="nav-message"><a href="#"><span class="icon">📢</span> 운영 메시지 관리</a></li>
-                    <li><a href="#"><span class="icon">⚙️</span> 시스템 설정</a></li>
+                    <li id="nav-settings"><a href="#"><span class="icon">⚙️</span> 시스템 설정</a></li>
                 </ul>
             </nav>
         </aside>
@@ -693,6 +693,312 @@
                                     <textarea id="txtMsgBody" class="eq-select" rows="4" placeholder="사용자에게 팝업으로 보여질 문구를 정확히 작성해주세요." style="padding:16px; resize:none; font-family:inherit; line-height:1.5; border:1px solid #cbd5e1;"></textarea>
                                 </div>
                                 <button class="btn-primary" id="btnSaveTemplate" style="align-self:flex-end; padding:14px 28px; border-radius:8px; font-size:1.05rem;"><span class="icon">➕</span> 이 템플릿 즉시 추가 / 활성화</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- System Settings View -->
+            <div id="view-settings" class="view-section" style="display: none;">
+                <div class="op-header">
+                    <h2>시스템 설정 <span style="font-size:0.9rem; color:var(--text-muted); font-weight:500; margin-left:12px;">운영 정책, 알림 기준 및 권한 통합 관리</span></h2>
+                    <div class="op-tabs">
+                        <button class="setting-tab-btn active" data-tab="setting-tab-1">1️⃣ 정원 정책 설정</button>
+                        <button class="setting-tab-btn" data-tab="setting-tab-2">2️⃣ 알림 기준 설정</button>
+                        <button class="setting-tab-btn" data-tab="setting-tab-3">3️⃣ 권한 관리</button>
+                    </div>
+                </div>
+
+                <div class="op-content-area" style="position:relative; display:flex; flex-direction:column; gap:24px; padding:24px;">
+                    
+                    <!-- 1. 정원 정책 설정 -->
+                    <div id="setting-tab-1" class="setting-tab-content active" style="display:block;">
+                        <div class="setting-section">
+                            <div class="setting-section-header">
+                                <h3><span class="icon">👥</span> 정원 정책 설정</h3>
+                                <p class="toolbar-desc">안전 운영을 위한 Wave, Zone, Session별 수용 인원 기준을 관리합니다.</p>
+                            </div>
+                            
+                            <div class="setting-card-grid">
+                                <!-- Wave 정원 -->
+                                <div class="setting-card">
+                                    <h4>Wave 정원 설정</h4>
+                                    <p class="setting-desc">기본 Wave 정원 및 최소/최대 범위 (운영 중 안전 이슈 발생 시 조정 가능)</p>
+                                    <div class="setting-field-group">
+                                        <div class="setting-field">
+                                            <label>기본 정원</label>
+                                            <div class="input-with-unit">
+                                                <input type="number" id="cfgWaveBase" class="eq-select text-right" value="4" min="1" max="10">
+                                                <span class="unit">명</span>
+                                            </div>
+                                        </div>
+                                        <div class="setting-field" style="display:flex; gap:16px;">
+                                            <div style="flex:1;">
+                                                <label>최소 정원</label>
+                                                <div class="input-with-unit">
+                                                    <input type="number" id="cfgWaveMin" class="eq-select text-right" value="2" min="1">
+                                                    <span class="unit">명</span>
+                                                </div>
+                                            </div>
+                                            <div style="flex:1;">
+                                                <label>최대 정원</label>
+                                                <div class="input-with-unit">
+                                                    <input type="number" id="cfgWaveMax" class="eq-select text-right" value="6" max="10">
+                                                    <span class="unit">명</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Zone 권장 인원 -->
+                                <div class="setting-card">
+                                    <h4>Zone 권장 인원 설정</h4>
+                                    <p class="setting-desc">Zone별 권장 수용 인원. 초과 시 위험 알림(Over Capacity) 기준이 됩니다.</p>
+                                    <div class="setting-field-group">
+                                        <div class="setting-field">
+                                            <label>Zone A (준비/대기역)</label>
+                                            <div class="input-with-unit">
+                                                <input type="number" class="eq-select text-right" value="12" min="1">
+                                                <span class="unit">명</span>
+                                            </div>
+                                        </div>
+                                        <div class="setting-field">
+                                            <label>Zone B (본 체험역)</label>
+                                            <div class="input-with-unit">
+                                                <input type="number" class="eq-select text-right" value="8" min="1">
+                                                <span class="unit">명</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Session 최대 인원 -->
+                                <div class="setting-card">
+                                    <h4>Session 최대 인원 설정</h4>
+                                    <p class="setting-desc">전체 체험 동시 수용 최대 인원. 초과 시 신규 Session START가 제한됩니다.</p>
+                                    <div class="setting-field-group">
+                                        <div class="setting-field">
+                                            <label>Session 최대 수용 인원</label>
+                                            <div class="input-with-unit">
+                                                <input type="number" id="cfgSessionMax" class="eq-select text-right" value="30" min="1">
+                                                <span class="unit">명</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-actions">
+                                <button class="btn-primary" onclick="alert('정원 정책이 성공적으로 저장되었습니다.')"><span class="icon">💾</span> 정책 저장</button>
+                                <span class="action-hint" style="color:#64748b; font-size:0.85rem; margin-left:12px;">※ 가급적 새로운 Session 시작 시점에 반영됩니다.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. 알림 기준 설정 -->
+                    <div id="setting-tab-2" class="setting-tab-content" style="display:none;">
+                        <div class="setting-section">
+                            <div class="setting-section-header">
+                                <h3><span class="icon">🔔</span> 알림 기준 설정</h3>
+                                <p class="toolbar-desc">운영 이벤트 및 위험 감지 민감도 기준을 조정합니다.</p>
+                            </div>
+                            
+                            <div class="setting-card-grid">
+                                <!-- 배터리 경고 기준 -->
+                                <div class="setting-card">
+                                    <h4>배터리 경고 기준 설정</h4>
+                                    <p class="setting-desc">HMD 배터리 부족 이벤트 패널과 연동되는 민감도 %</p>
+                                    <div class="setting-field-group">
+                                        <div class="setting-field">
+                                            <label>배터리 Low 기준</label>
+                                            <div class="input-with-unit">
+                                                <input type="number" class="eq-select text-right" value="20" min="5" max="50">
+                                                <span class="unit">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="setting-field">
+                                            <label class="text-red">Critical (위험) 기준</label>
+                                            <div class="input-with-unit">
+                                                <input type="number" class="eq-select text-right" value="10" min="1" max="20" style="border-color:#fca5a5; background:#fef2f2;">
+                                                <span class="unit">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Wave 지연 & 사용자 이탈 -->
+                                <div class="setting-card">
+                                    <h4>진행 지연 및 이상 감지 기준</h4>
+                                    <p class="setting-desc">운영 이벤트(안전 핵심) 발생을 판단하는 허용 임계치</p>
+                                    <div class="setting-field-group">
+                                        <div class="setting-field">
+                                            <label>Wave 지연 판단 시간</label>
+                                            <select class="eq-select">
+                                                <option value="3">3분 지연 시 알림</option>
+                                                <option value="5" selected>5분 지연 시 알림</option>
+                                                <option value="10">10분 지연 시 알림</option>
+                                            </select>
+                                        </div>
+                                        <div class="setting-field">
+                                            <label>사용자 위치 이탈 감지 기준 (거리)</label>
+                                            <div class="input-with-unit">
+                                                <input type="number" class="eq-select text-right" value="2.5" step="0.5" min="1">
+                                                <span class="unit">미터 (m)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 알림 활성화 설정 -->
+                                <div class="setting-card">
+                                    <h4>알림 UX 활성화 설정</h4>
+                                    <p class="setting-desc">관제 대시보드의 알림 표시 방식 제어</p>
+                                    <div class="setting-field-group" style="gap:20px;">
+                                        <div class="setting-toggle-item">
+                                            <div class="toggle-info">
+                                                <span class="toggle-label" style="font-weight:600; font-size:0.95rem;">시스템 이벤트 팝업 알림</span>
+                                                <span class="toggle-desc" style="display:block; font-size:0.8rem; color:#64748b; margin-top:2px;">우측 상단 토스트 팝업 표시 여부</span>
+                                            </div>
+                                            <label class="sm-toggle">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="setting-toggle-item" style="margin-top:16px;">
+                                            <div class="toggle-info">
+                                                <span class="toggle-label" style="font-weight:600; font-size:0.95rem;">이벤트 발생 사운드 (경고음)</span>
+                                                <span class="toggle-desc" style="display:block; font-size:0.8rem; color:#64748b; margin-top:2px;">주의/긴급 이벤트 발생 시 효과음 재생</span>
+                                            </div>
+                                            <label class="sm-toggle">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="setting-actions">
+                                <button class="btn-primary" onclick="alert('알림 기준이 성공적으로 저장되었습니다.')"><span class="icon">💾</span> 알림 기준 반영</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. 권한 관리 -->
+                    <div id="setting-tab-3" class="setting-tab-content" style="display:none;">
+                        <div class="setting-section">
+                            <div class="setting-section-header">
+                                <h3><span class="icon">🔑</span> 권한 관리</h3>
+                                <p class="toolbar-desc">시스템 역할(Role)별 접근 가능한 통제 제어 기능을 명시하고 계정을 관리합니다.</p>
+                            </div>
+
+                            <div class="setting-flex-layout" style="display:flex; gap:24px; margin-top:16px;">
+                                <!-- Role별 접근 설정표 (MVP) -->
+                                <div class="setting-box" style="flex:1; background:#1e293b; padding:20px; border-radius:12px; border:1px solid #334155;">
+                                    <h4 style="margin-bottom:12px; font-size:1.05rem;">역할별(Role) 접근 권한 정책</h4>
+                                    <div class="table-container">
+                                        <table class="data-table" style="font-size:0.85rem;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:30%;">기능 / 접근 메뉴</th>
+                                                    <th class="text-center">운영자</th>
+                                                    <th class="text-center">관리자</th>
+                                                    <th class="text-center">시스템 관리자</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>현장 모니터링 (대시보드)</td>
+                                                    <td class="text-center"><span class="icon text-green">✅</span></td>
+                                                    <td class="text-center"><span class="icon text-green">✅</span></td>
+                                                    <td class="text-center"><span class="icon text-green">✅</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Wave 생성 및 강제 이동</td>
+                                                    <td class="text-center"><input type="checkbox" checked disabled></td>
+                                                    <td class="text-center"><input type="checkbox" checked disabled></td>
+                                                    <td class="text-center"><input type="checkbox" checked disabled></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>새 Session 생성 및 시작 제어</td>
+                                                    <td class="text-center"><input type="checkbox" disabled></td>
+                                                    <td class="text-center"><input type="checkbox" checked disabled></td>
+                                                    <td class="text-center"><input type="checkbox" checked disabled></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>장비 강제 교체 / 초기화</td>
+                                                    <td class="text-center"><input type="checkbox" disabled></td>
+                                                    <td class="text-center"><input type="checkbox" checked disabled></td>
+                                                    <td class="text-center"><input type="checkbox" checked disabled></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-danger bold">시스템/정원 설정 접근</td>
+                                                    <td class="text-center"><input type="checkbox" disabled></td>
+                                                    <td class="text-center"><input type="checkbox" disabled></td>
+                                                    <td class="text-center"><input type="checkbox" checked disabled></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p class="action-hint" style="margin-top:12px; color:#64748b; font-size:0.8rem;">※ MVP 버전에서는 권한 매트릭스 정책 조회만 가능합니다.</p>
+                                </div>
+
+                                <!-- 사용자 리스트 및 Role 지정 -->
+                                <div class="setting-box" style="flex:1; background:#1e293b; padding:20px; border-radius:12px; border:1px solid #334155;">
+                                    <h4 style="margin-bottom:12px; font-size:1.05rem;">사용자 계정 역할(Role) 지정</h4>
+                                    <div class="table-container">
+                                        <table class="data-table" style="font-size:0.85rem;">
+                                            <thead>
+                                                <tr>
+                                                    <th>계정명(ID)</th>
+                                                    <th>이름</th>
+                                                    <th>부여된 역할 (Role)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>admin@vrplatform.com</td>
+                                                    <td>V관(최고관리자)</td>
+                                                    <td>
+                                                        <select class="eq-select" style="padding:4px; font-size:0.8rem; width:100%;">
+                                                            <option>운영자</option>
+                                                            <option>관리자</option>
+                                                            <option selected>시스템 관리자</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>op1@vrplatform.com</td>
+                                                    <td>김책길(헤드운영)</td>
+                                                    <td>
+                                                        <select class="eq-select" style="padding:4px; font-size:0.8rem; width:100%;">
+                                                            <option>운영자</option>
+                                                            <option selected>관리자</option>
+                                                            <option>시스템 관리자</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>staff_01@vr.com</td>
+                                                    <td>이현장(스태프)</td>
+                                                    <td>
+                                                        <select class="eq-select" style="padding:4px; font-size:0.8rem; width:100%;">
+                                                            <option selected>운영자</option>
+                                                            <option>관리자</option>
+                                                            <option>시스템 관리자</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="setting-actions" style="margin-top:24px; display:flex; justify-content:flex-end;">
+                                        <button class="btn-primary" style="background-color: #ef4444;" onclick="if(confirm('권한 변경 사항을 저장하시겠습니까? 권한 변경 시 일부 로그인 세션이 리셋될 수 있습니다.')) alert('권한이 변경되었습니다.');"><span class="icon">🔒</span> 권한 변경 내용 저장</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
